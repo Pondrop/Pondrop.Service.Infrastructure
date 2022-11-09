@@ -7,7 +7,7 @@ using Pondrop.Service.Models;
 
 namespace Pondrop.Service.Infrastructure.CosmosDb;
 
-public class CheckpointRepository<T> : AbstractRepository<T>, ICheckpointRepository<T>
+public class CheckpointRepository<T> : AbstractRepository<T>, ICheckpointRepository<T> where T : EventEntity, new()
 {
     private const string SpUpsertCheckpoint = "spUpsertCheckpoint";
 
