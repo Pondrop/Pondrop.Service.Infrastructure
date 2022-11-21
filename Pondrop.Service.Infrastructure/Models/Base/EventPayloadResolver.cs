@@ -7,19 +7,33 @@ namespace Pondrop.Service.Events;
 public class DefaultEventTypePayloadResolver : IEventTypePayloadResolver
 {
     private static DefaultEventTypePayloadResolver? Default;
-    public static IEventTypePayloadResolver Instance => Default ??= new DefaultEventTypePayloadResolver();
-    
+    public static IEventTypePayloadResolver Instance => Default ?? throw new NullReferenceException();
+
     private readonly ConcurrentDictionary<string, Type> _typeLookup = new ConcurrentDictionary<string, Type>();
 
-    public Type? GetEventPayloadType(string streamType, string typeName)
+    private readonly string _assemblyFullName;
+    private readonly string _baseNamespace;
+
+    public DefaultEventTypePayloadResolver(Assembly baseAssembly)
     {
-        if (!_typeLookup.TryGetValue(typeName, out var type))
+        _assemblyFullName = baseAssembly.FullName;
+        _baseNamespace = $"{baseAssembly.GetName().Name}.Events";
+    }
+
+    public static void Init(Assembly baseAssembly)
+    {
+        Default ??= new DefaultEventTypePayloadResolver(baseAssembly);
+    }
+
+    public Type? GetEventPayloadType(string streamType, string eventName)
+    {
+        if (!_typeLookup.TryGetValue(eventName, out var type))
         {
-            type = Type.GetType($"{typeof(EventPayload).Namespace}.{streamType}.{typeName}, {typeof(IEventPayload).Assembly.FullName}");
+            type = Type.GetType($"{_baseNamespace}.{streamType}.{eventName}, {_assemblyFullName}");
             if (type is not null)
-                _typeLookup.AddOrUpdate(typeName, type, (k, v) => type);
+                _typeLookup.AddOrUpdate(eventName, type, (k, v) => type);
         }
 
         return type;
+        }
     }
-}
