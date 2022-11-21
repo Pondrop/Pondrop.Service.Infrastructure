@@ -44,3 +44,8 @@ steps:
     nuGetFeedType: 'internal'
     publishVstsFeed: '9c4ab9ca-f0c0-4130-94b4-bc5c0dc5b5f7'
     allowPackageConflicts: true
+    
+- task: NuKeeper@0
+  inputs:
+    feed: '/9c4ab9ca-f0c0-4130-94b4-bc5c0dc5b5f7'
+    version: '0.*'
