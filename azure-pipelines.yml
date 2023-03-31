@@ -32,28 +32,3 @@ steps:
     nobuild: true
     versioningScheme: 'off'
 
-# The last task is a nuget command, nuget push
-# This will push any .nupkg files to the 'TestFeed' artifact feed
-# allowPackageConflicts allows us to build the same version and not throw an error when trying to push
-# instead it just ingores the latest package unless the version changes
-- task: NuGetCommand@2
-  displayName: 'nuget push'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: '9c4ab9ca-f0c0-4130-94b4-bc5c0dc5b5f7'
-    allowPackageConflicts: true
-
-- task: CmdLine@2
-  inputs:
-    script: |
-      dotnet tool install nukeeper --global
-      
-      nukeeper repo https://PondropDevOps@dev.azure.com/PondropDevOps/Pondrop/_git/Pondrop.Service.Auth xytymiufz722mucsnerxy6qlcgaq44qurnf7cnaj75ile4se7ocq --include Pondrop.Service.Infrastructure --age 0
-      
-      nukeeper repo https://PondropDevOps@dev.azure.com/PondropDevOps/Pondrop/_git/Pondrop.Service.Store xytymiufz722mucsnerxy6qlcgaq44qurnf7cnaj75ile4se7ocq --include Pondrop.Service.Infrastructure --age 0
-      
-      nukeeper repo https://PondropDevOps@dev.azure.com/PondropDevOps/Pondrop/_git/Pondrop.Service.Product xytymiufz722mucsnerxy6qlcgaq44qurnf7cnaj75ile4se7ocq --include Pondrop.Service.Infrastructure --age 0
-      
-      nukeeper repo https://PondropDevOps@dev.azure.com/PondropDevOps/Pondrop/_git/Pondrop.Service.Submission xytymiufz722mucsnerxy6qlcgaq44qurnf7cnaj75ile4se7ocq --include Pondrop.Service.Infrastructure --age 0
